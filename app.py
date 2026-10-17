@@ -1,12 +1,10 @@
-"""
+
 Personal Task Manager - Flask Backend
---------------------------------------
-A complete CRUD application for managing tasks with due dates,
-priority levels, and categories/tags. Uses SQLite as the database.
+
 
 Run with: python app.py
 Then open: http://127.0.0.1:5000
-"""
+
 
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 import sqlite3
@@ -17,9 +15,8 @@ app = Flask(__name__)
 DB_NAME = os.path.join(os.path.dirname(__file__), "tasks.db")
 
 
-# ---------------------------------------------------------------------------
 # Database helpers
-# ---------------------------------------------------------------------------
+
 def get_db_connection():
     """Create a database connection with row access by column name."""
     conn = sqlite3.connect(DB_NAME)
@@ -46,9 +43,9 @@ def init_db():
     conn.close()
 
 
-# ---------------------------------------------------------------------------
+
 # Routes - Web pages (server-rendered)
-# ---------------------------------------------------------------------------
+
 @app.route("/")
 def index():
     """Main page: show all tasks, with optional filtering."""
@@ -164,9 +161,11 @@ def toggle_task(task_id):
     return jsonify({"success": True, "is_completed": new_status})
 
 
-# ---------------------------------------------------------------------------
+
 # Entry point
-# ---------------------------------------------------------------------------
+
+
 if __name__ == "__main__":
     init_db()
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)
+
