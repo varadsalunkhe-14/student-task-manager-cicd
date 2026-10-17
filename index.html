@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Manager</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>📝 Task Manager</h1>
+      <p class="subtitle">Stay on top of what matters</p>
+    </header>
+
+    <!-- Add Task Form -->
+    <section class="card">
+      <h2>Add New Task</h2>
+      <form action="{{ url_for('add_task') }}" method="POST" class="task-form">
+        <input type="text" name="title" placeholder="Task title" required>
+        <textarea name="description" placeholder="Description (optional)"></textarea>
+
+        <div class="form-row">
+          <input type="text" name="category" placeholder="Category (e.g. Work, Personal)">
+          <select name="priority">
+            <option value="Low">Low Priority</option>
+            <option value="Medium" selected>Medium Priority</option>
+            <option value="High">High Priority</option>
+          </select>
+          <input type="date" name="due_date">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add Task</button>
+      </form>
+    </section>
+
+    <!-- Filters -->
+    <section class="filters">
+      <div class="filter-group">
+        <span class="filter-label">Status:</span>
+        <a href="{{ url_for('index', status='all', category=category_filter) }}"
+           class="{{ 'active' if status_filter == 'all' else '' }}">All</a>
+        <a href="{{ url_for('index', status='pending', category=category_filter) }}"
+           class="{{ 'active' if status_filter == 'pending' else '' }}">Pending</a>
+        <a href="{{ url_for('index', status='completed', category=category_filter) }}"
+           class="{{ 'active' if status_filter == 'completed' else '' }}">Completed</a>
+      </div>
+
+      {% if categories %}
+      <div class="filter-group">
+        <span class="filter-label">Category:</span>
+        <a href="{{ url_for('index', status=status_filter, category='all') }}"
+           class="{{ 'active' if category_filter == 'all' else '' }}">All</a>
+        {% for c in categories %}
+        <a href="{{ url_for('index', status=status_filter, category=c['category']) }}"
+           class="{{ 'active' if category_filter == c['category'] else '' }}">{{ c['category'] }}</a>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </section>
+
+    <!-- Task List -->
+    <section class="task-list">
+      {% if tasks|length == 0 %}
+        <p class="empty-state">No tasks found. Add one above to get started!</p>
+      {% endif %}
+
+      {% for task in tasks %}
+      <div class="task-item priority-{{ task['priority']|lower }} {{ 'completed' if task['is_completed'] else '' }}"
+           id="task-{{ task['id'] }}">
+
+        <div class="task-checkbox">
+          <input type="checkbox"
+                 {{ 'checked' if task['is_completed'] else '' }}
+                 onchange="toggleTask({{ task['id'] }})">
+        </div>
+
+        <div class="task-content">
+          <h3 class="task-title">{{ task['title'] }}</h3>
+          {% if task['description'] %}
+            <p class="task-desc">{{ task['description'] }}</p>
+          {% endif %}
+          <div class="task-meta">
+            <span class="badge badge-category">{{ task['category'] }}</span>
+            <span class="badge badge-priority-{{ task['priority']|lower }}">{{ task['priority'] }}</span>
+            {% if task['due_date'] %}
+              <span class="badge badge-date">📅 {{ task['due_date'] }}</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="task-actions">
+          <a href="{{ url_for('edit_task', task_id=task['id']) }}" class="btn btn-small">Edit</a>
+          <form action="{{ url_for('delete_task', task_id=task['id']) }}" method="POST"
+                onsubmit="return confirm('Delete this task?');" style="display:inline;">
+            <button type="submit" class="btn btn-small btn-danger">Delete</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </section>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
