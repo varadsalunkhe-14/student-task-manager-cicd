@@ -14,11 +14,11 @@
         <header>
             <h1>Student Task Manager</h1>
             <p>Manage your daily tasks efficiently.</p>
-            <p id="deployment-version">Deployment Test: Version 2</p>
+            <p id="deployment-version">Deployment Test: Version 3</p>
         </header>
 
         <section class="task-form">
-            <form action="{{ url_for('index') }}" method="POST">
+            <form action="{{ url_for('add_task') }}" method="POST">
                 <input
                     type="text"
                     name="title"
@@ -36,15 +36,15 @@
                 <ul>
                     {% for task in tasks %}
                         <li>
-                            <span>{{ task.title }}</span>
+                            <span>{{ task["title"] }}</span>
 
                             <div class="task-actions">
-                                <a href="{{ url_for('edit', task_id=task.id) }}">
+                                <a href="{{ url_for('edit_task', task_id=task['id']) }}">
                                     Edit
                                 </a>
 
                                 <form
-                                    action="{{ url_for('delete', task_id=task.id) }}"
+                                    action="{{ url_for('delete_task', task_id=task['id']) }}"
                                     method="POST"
                                 >
                                     <button type="submit">Delete</button>
